@@ -20,7 +20,7 @@ pub enum Token {
     LessThan,
     LessThanEquals,
 
-    // identifier
+    // identifiers
     Print,
     If,
     Then,
@@ -84,19 +84,19 @@ pub fn lex(input: &str) -> Result<Vec<Token>, LexerError> {
             output.push(Token::Divide);
 
         // relational ops
-        } else if rest.starts_with("=") {
+        } else if rest.starts_with('=') {
             (_, rest) = rest.split_at(1);
             output.push(Token::Equals);
         } else if rest.starts_with("<>") {
             (_, rest) = rest.split_at(2);
             output.push(Token::NotEquals);
-        } else if rest.starts_with(">") {
+        } else if rest.starts_with('>') {
             (_, rest) = rest.split_at(1);
             output.push(Token::GreaterThan);
         } else if rest.starts_with(">=") {
             (_, rest) = rest.split_at(2);
             output.push(Token::GreaterThanEquals);
-        } else if rest.starts_with("<") {
+        } else if rest.starts_with('<') {
             (_, rest) = rest.split_at(1);
             output.push(Token::LessThan);
         } else if rest.starts_with("<=") {
@@ -159,5 +159,5 @@ fn split_number(input: &str) -> (&str, &str) {
 
 fn split_string(input: &str) -> Option<(&str, &str)> {
     assert!(input.starts_with('\"'));
-    input.split_at(1).1.split_once("\"")
+    input.split_at(1).1.split_once('\"')
 }
