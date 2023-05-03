@@ -16,29 +16,23 @@ pub fn transpile(input: Vec<parser::Line>) -> Result<String, TranspileError> {
 }
 
 fn transpile_line(input: &parser::Line) -> Result<String, TranspileError> {
-    Ok(
-        "line_".to_string()
-            + &input.0.to_string()
-            + ":\n"
-            + &transpile_statement(&input.1)?
-            + ";\n",
-    )
+    Ok("line_".to_string() + &input.0.to_string() + ":\n" + &transpile_statement(&input.1)? + "\n")
 }
 
 fn transpile_statement(input: &parser::Statement) -> Result<String, TranspileError> {
-    match input {
-        parser::Statement::Print(_) => transpile_print(input),
-        parser::Statement::If(_, _, _, _) => transpile_if(input),
-        parser::Statement::Goto(_) => transpile_goto(input),
-        parser::Statement::Input(_) => transpile_input(input),
-        parser::Statement::Let(_, _) => transpile_let(input),
-        parser::Statement::Gosub(_) => transpile_gosub(input),
-        parser::Statement::Return => transpile_return(input),
-        parser::Statement::Clear => transpile_clear(input),
-        parser::Statement::List => transpile_list(input),
-        parser::Statement::Run => transpile_run(input),
-        parser::Statement::End => transpile_end(input),
-    }
+    Ok(match input {
+        parser::Statement::Print(_) => transpile_print(input)? + ";",
+        parser::Statement::If(_, _, _, _) => transpile_if(input)? + ";",
+        parser::Statement::Goto(_) => transpile_goto(input)? + ";",
+        parser::Statement::Input(_) => transpile_input(input)? + ";",
+        parser::Statement::Let(_, _) => transpile_let(input)? + ";",
+        parser::Statement::Gosub(_) => transpile_gosub(input)? + ";",
+        parser::Statement::Return => transpile_return(input)? + ";",
+        parser::Statement::Clear => transpile_clear(input)? + ";",
+        parser::Statement::List => transpile_list(input)? + ";",
+        parser::Statement::Run => transpile_run(input)? + ";",
+        parser::Statement::End => transpile_end(input)? + ";",
+    })
 }
 
 fn transpile_print(input: &parser::Statement) -> Result<String, TranspileError> {
@@ -104,7 +98,17 @@ fn transpile_factor(input: &parser::Factor) -> Result<String, TranspileError> {
 }
 
 fn transpile_if(input: &parser::Statement) -> Result<String, TranspileError> {
-    todo!()
+    if let parser::Statement::If(left, relop, right, statement) = input {
+        Ok("if (".to_string()
+            + &transpile_expr(left)?
+            + &transpile_relop(relop)?
+            + &transpile_expr(right)?
+            + ") {"
+            + &transpile_statement(statement)?
+            + "}")
+    } else {
+        Err(TranspileError::InvalidStatement)
+    }
 }
 
 fn transpile_relop(input: &parser::Relop) -> Result<String, TranspileError> {
@@ -120,7 +124,11 @@ fn transpile_relop(input: &parser::Relop) -> Result<String, TranspileError> {
 }
 
 fn transpile_goto(input: &parser::Statement) -> Result<String, TranspileError> {
-    todo!()
+    if let parser::Statement::Goto(e) = input {
+        Ok("goto line_".to_string() + &transpile_expr(e)?)
+    } else {
+        Err(TranspileError::InvalidStatement)
+    }
 }
 
 fn transpile_input(input: &parser::Statement) -> Result<String, TranspileError> {
