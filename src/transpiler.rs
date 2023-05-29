@@ -136,7 +136,11 @@ fn transpile_input(input: &parser::Statement) -> Result<String, TranspileError> 
 }
 
 fn transpile_let(input: &parser::Statement) -> Result<String, TranspileError> {
-    todo!()
+    if let parser::Statement::Let(var, expr) = input {
+        Ok("int ".to_string() + &var.to_string() + " = " + &transpile_expr(expr)?)
+    } else {
+        Err(TranspileError::InvalidStatement)
+    }
 }
 
 fn transpile_gosub(input: &parser::Statement) -> Result<String, TranspileError> {
@@ -160,5 +164,5 @@ fn transpile_run(input: &parser::Statement) -> Result<String, TranspileError> {
 }
 
 fn transpile_end(input: &parser::Statement) -> Result<String, TranspileError> {
-    todo!()
+    Ok("return".to_string())
 }
